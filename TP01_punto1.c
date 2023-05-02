@@ -19,6 +19,7 @@ void Mostrar1Tarea(Tarea *tarea);
 int consultarEstadoTarea( Tarea **arretareas, Tarea **arreTareasRealizadas, int cantidadTareas);
 void listarTareas(Tarea ** arretareas, int cantidadTareas, Tarea ** arreTareasRealizadas, int indiceRealizadas);
 void buscarTareaPorID(Tarea **arretareas, int cantidadTareas, Tarea ** arreTareasRealizadas, int indiceRealizadas);
+void buscarTareaPorPalabra(Tarea **arretareas, int cantidadTareas, Tarea **arreTareasRealizadas, int indiceRealizadas, char *palabra);
 
 
 int main(){
@@ -66,6 +67,12 @@ int main(){
     //6. Cree un nuevo branch llamado busca-tarea e implemente una función de búsqueda de tarea por nro. de id de nombre BuscarTarea. La misma devuelve la tarea solicitada.
 
     buscarTareaPorID(arretareas, cantidadTareas, arreTareasRealizadas, indiceRealizadas);
+
+
+    //7. Vuelva al branch main e implemente también una nueva versión de la función BuscarTarea en donde la misma sea por palabra clave en vez de por Id. (uno le manda una palabra y te tiene que devolver la primera tarea que contenga dicha palabra).
+
+    buscarTareaPorPalabra(arretareas, cantidadTareas, arreTareasRealizadas, indiceRealizadas, "Emmanuel");
+
     
     return 0;
 }
@@ -220,4 +227,34 @@ void buscarTareaPorID(Tarea **arretareas, int cantidadTareas, Tarea ** arreTarea
             printf("\nLa tarea ya se realizo...\n");
         }
     }   
+}
+
+
+
+void buscarTareaPorPalabra(Tarea **arretareas, int cantidadTareas, Tarea **arreTareasRealizadas, int indiceRealizadas, char *palabra){
+
+    printf("\nBUSQUEDA DE LA TAREA POR PALABRA\n");
+
+    for (int i = 0; i < cantidadTareas; i++)
+    {
+        if (arretareas[i])
+        {
+            if ( strstr(arretareas[i]->Descripcion, palabra) != NULL )
+            {
+                Mostrar1Tarea(arretareas[i]);
+                printf("\nLa Tarea se encuentra incompleta...");
+            }            
+        }
+    }
+
+    for (int j = 0; j < indiceRealizadas; j++)
+    {
+        if (strstr(arreTareasRealizadas[j]->Descripcion, palabra) != NULL)
+        {
+            Mostrar1Tarea(arreTareasRealizadas[j]);
+            printf("\nLa tarea ya se marco como realizada...");
+        }
+    }
+    
+    
 }
