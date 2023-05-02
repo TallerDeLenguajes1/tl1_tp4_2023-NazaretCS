@@ -20,6 +20,7 @@ int consultarEstadoTarea( Tarea **arretareas, Tarea **arreTareasRealizadas, int 
 void listarTareas(Tarea ** arretareas, int cantidadTareas, Tarea ** arreTareasRealizadas, int indiceRealizadas);
 void buscarTareaPorID(Tarea **arretareas, int cantidadTareas, Tarea ** arreTareasRealizadas, int indiceRealizadas);
 void buscarTareaPorPalabra(Tarea **arretareas, int cantidadTareas, Tarea **arreTareasRealizadas, int indiceRealizadas, char *palabra);
+void LiberarMemoria(Tarea **arreTareas, int cantidadTareas);
 
 
 int main(){
@@ -72,6 +73,10 @@ int main(){
     //7. Vuelva al branch main e implemente también una nueva versión de la función BuscarTarea en donde la misma sea por palabra clave en vez de por Id. (uno le manda una palabra y te tiene que devolver la primera tarea que contenga dicha palabra).
 
     buscarTareaPorPalabra(arretareas, cantidadTareas, arreTareasRealizadas, indiceRealizadas, "Emmanuel");
+
+    //Libero la memoria usada en ambos arreglos
+    LiberarMemoria(arretareas, cantidadTareas);
+    LiberarMemoria(arreTareasRealizadas, indiceRealizadas);
 
     
     return 0;
@@ -255,6 +260,18 @@ void buscarTareaPorPalabra(Tarea **arretareas, int cantidadTareas, Tarea **arreT
             printf("\nLa tarea ya se marco como realizada...");
         }
     }
-    
-    
+}
+
+
+void LiberarMemoria(Tarea **arreTareas, int cantidadTareas){
+
+    for (int i = 0; i < cantidadTareas; i++)
+    {
+        if (arreTareas[i])
+        {
+            free(arreTareas[i]->Descripcion);
+        }
+        free(arreTareas[i]);
+    }
+    free(arreTareas);
 }
