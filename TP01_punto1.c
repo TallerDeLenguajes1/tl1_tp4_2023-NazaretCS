@@ -9,69 +9,79 @@ struct Tarea {
     int TareaID; //Numerado en ciclo iterativo
     char *Descripcion;
     int Duracion; // entre 10 – 100
+    int realizada;
 } typedef Tarea;
 
 
+struct Nodo{
+    Tarea T;
+    struct Nodo *Siguiente;
+} typedef Nodo;
+
+typedef struct Nodo* Lista;
+
 int CantTares();
-void CargarTarea( Tarea **arretareas, int cantidadTareas);
-void MostrarTareas(Tarea **arreTareas, int cantidad);
-void Mostrar1Tarea(Tarea *tarea);
-int consultarEstadoTarea( Tarea **arretareas, Tarea **arreTareasRealizadas, int cantidadTareas);
-void listarTareas(Tarea ** arretareas, int cantidadTareas, Tarea ** arreTareasRealizadas, int indiceRealizadas);
-void buscarTareaPorID(Tarea **arretareas, int cantidadTareas, Tarea ** arreTareasRealizadas, int indiceRealizadas);
-void buscarTareaPorPalabra(Tarea **arretareas, int cantidadTareas, Tarea **arreTareasRealizadas, int indiceRealizadas, char *palabra);
+Lista CrearLista();
+Lista CrearNodo();
+void MostrarTareas(Lista tareas);
+Lista CargarTarea(Lista tareasPendientes, int ID);
+void Mostrar1Tarea(Tarea tarea);
+
 
 
 int main(){
 
-    int cantidadTareas, indiceRealizadas;
-    Tarea **arretareas, **arreTareasRealizadas;
+    int cantidadTareas;
+   
+
     //1. Desarrollar una interfaz por consola donde se solicite al usuario (es decir el empleado) cuantas tareas debe cargar.
     cantidadTareas = CantTares();
 
 
     // 2. Tendrá que generar un arreglo de doble punteros dinámicamente del tipo Tarea con la cantidad de tareas solicitadas en el punto anterior.Recuerde inicializar los arreglos apuntando a NULL.
+    // En esta implementacion se reemplaza los arreglos por dos listas
 
-    arretareas = (Tarea **)malloc(sizeof(Tarea *)*cantidadTareas);
+    Lista tareasPendientes;
+    Lista tareasRealizadas;
+
+    tareasPendientes = CrearLista();
+    tareasRealizadas = CrearLista();
+
     srand(time(NULL));
 
-    for (int i = 0; i < cantidadTareas; i++) {
-        arretareas[i] = NULL;
-    }
-
+    printf("Lista de Tareas Pendientes:\n");
+    MostrarTareas(tareasPendientes);
+    printf("Lista de Tareas Realizadas:\n");
+    MostrarTareas(tareasPendientes);
     
 
    // 3 Desarrolle una interfaz de consola para cargar las tareas, ingresando su descripción y duración. Recuerde utilizar reserva de  memoria dinámica para la carga de la descripción.
   
-    CargarTarea( arretareas, cantidadTareas);
-
-    
-    //MostrarTareas( arretareas, cantidadTareas);
-    /* for (int i = 0; i < cantidadTareas; i++)
+    //Cargo las tareas la lista
+    for (int i = 0; i < cantidadTareas; i++)
     {
-        Mostrar1Tarea(arretareas[i]);
-    } */
+        tareasPendientes = CargarTarea(tareasPendientes, i+1);
+    }
     
 
-    //reservo la memoria para el segundo arreglo de tareas con la misma cantidad que el primero:
-    arreTareasRealizadas = (Tarea **)malloc(sizeof(Tarea *)*cantidadTareas);
+    //MostrarTareas(tareasPendientes);
+
+    consultarEstado(tareasPendientes, tareasRealizadas);
     
-    indiceRealizadas = consultarEstadoTarea( arretareas, arreTareasRealizadas, cantidadTareas);
-    //printf("La cantidad de tareas realizadas es de: %d",indiceRealizadas);
-
-
 
     //5. Mostrar por pantalla todas las tareas realizadas y luego listar las tareas pendientes.
-    listarTareas(arretareas, cantidadTareas, arreTareasRealizadas, indiceRealizadas);
+
+
+   
+
 
     //6. Cree un nuevo branch llamado busca-tarea e implemente una función de búsqueda de tarea por nro. de id de nombre BuscarTarea. La misma devuelve la tarea solicitada.
 
-    buscarTareaPorID(arretareas, cantidadTareas, arreTareasRealizadas, indiceRealizadas);
+   
 
 
     //7. Vuelva al branch main e implemente también una nueva versión de la función BuscarTarea en donde la misma sea por palabra clave en vez de por Id. (uno le manda una palabra y te tiene que devolver la primera tarea que contenga dicha palabra).
 
-    buscarTareaPorPalabra(arretareas, cantidadTareas, arreTareasRealizadas, indiceRealizadas, "Emmanuel");
 
     
     return 0;
@@ -95,166 +105,110 @@ int CantTares(){
     return cantidadTareas;
 }
 
-void CargarTarea( Tarea **arretareas, int cantidadTareas){
 
-   // 3 Desarrolle una interfaz de consola para cargar las tareas, ingresando su descripción y duración. Recuerde utilizar reserva de  memoria dinámica para la carga de la descripción.
 
-    char *buff = (char *)malloc(sizeof(char) *100);
-    
-    for (int i = 0; i < cantidadTareas; i++)
-    {
-        printf("\n\nCARGADO DE LAS TARES");
-        arretareas[i] = (Tarea *)malloc(sizeof(Tarea));  // se reserva la memoria dianamicamente en cada iteracion.
+Lista CrearLista(){
+    return NULL;
+    // ara que la cabezera de la lista apunte a NULL
+}
 
-        arretareas[i]->TareaID = i+1;
-        arretareas[i]->Duracion = rand() % 90 +10;
-        printf("\nIngrese la descripcion de la tarea: \n");
-        fflush(stdin);
-        gets(buff);
-        arretareas[i]->Descripcion = (char *)malloc(sizeof(char) * strlen(buff));
-        strcpy(arretareas[i]->Descripcion, buff);
-    }
+
+Lista CrearNodo(){  //Si la particularizo para el problema se podria llamar CrearTarea
+    Lista newNodo = (Lista)malloc(sizeof(Nodo));
+    //Una vez Creado el nodo me concentro en los datos que llevara
+
+    int duracion = rand() % 90 +10;
+    char *buff = (char *)malloc(sizeof(char)*200);
+
+    fflush(stdin);
+    printf("\nIngrese La descripcion de la tarea:");
+    gets(buff);
+
+    newNodo->T.Descripcion = (char *)malloc((strlen(buff)+1) * sizeof(char));
+    strcpy( newNodo->T.Descripcion, buff);
+    newNodo->T.Duracion = duracion;
+    newNodo->Siguiente = NULL;
     free(buff);
+    return newNodo;
 }
 
-void MostrarTareas(Tarea **arreTareas, int cantidadTareas){
-    printf("\n\nMOSTRAR TAREAS  \n");
 
-    for (int i = 0; i < cantidadTareas; i++)
+Lista CargarTarea(Lista tareasPendientes, int ID){
+
+    Lista nuevoNodo = CrearNodo();
+
+    nuevoNodo->T.TareaID = ID;
+
+    if (tareasPendientes)   // Tener cuidado con esta parte
     {
-        printf("\n Datos de la Tarea: [ %d ]\n", arreTareas[i]->TareaID);
-        printf("    ID Tarea:  %d\n",arreTareas[i]->TareaID);
-        printf("    Duracion: %d\n",arreTareas[i]->Duracion);
-        printf("    Descripcion: ");
-        puts(arreTareas[i]->Descripcion);
-    }
-}
+        Lista auxiliar = tareasPendientes;
 
-void Mostrar1Tarea(Tarea *tarea){
-    printf("\n\nDatos de la Tarea: %d",tarea->TareaID);
-    printf("\n    ID de la Tarea: %d\n", tarea->TareaID);
-    printf("    Duracion: %d\n", tarea->Duracion);
-    printf("    Descripcion: ");
-    puts(tarea->Descripcion);
-}
-
-
-int consultarEstadoTarea( Tarea **arretareas, Tarea **arreTareasRealizadas, int cantidadTareas){
-
-    int estado, indiceRealizadas=0;
-
-    for (int i = 0; i < cantidadTareas; i++)
-    {
-        Mostrar1Tarea(arretareas[i]);
-
-        do
+        while (auxiliar->Siguiente != NULL)
         {
-            printf("Esta tarea ya fue realizada?    Si = 1,  No = 0\n");
-            scanf("%d", &estado);
-
-            if (estado != 1 || estado != 0)
-            {
-                printf("por favor ingrese un valor que corresponda con lo solicitado... \n");
-            }
-        } while (estado != 1 && estado != 0);
+            auxiliar = auxiliar->Siguiente;
+            // Si no es ultimo nodo sigo iterando hasta llegar a lo que nesesito
+        }
+        // Una vez que estoy en el ultimo nodo puedo enlazar mi nuevo nodo...
+        auxiliar->Siguiente = nuevoNodo;
+    
+    } else {
         
-        if (estado)
-        {
-            arreTareasRealizadas[indiceRealizadas] = arretareas[i];
-            arretareas[i]=NULL;
-            indiceRealizadas++;
-        }
+        // Como mi lista no tiene ningun nodo directamente enlazo mi nuevo nodo al comienzo
+        nuevoNodo->Siguiente = tareasPendientes;
+        tareasPendientes = nuevoNodo;
+
     }
-    return indiceRealizadas;
+    return tareasPendientes;
+}
+
+void MostrarTareas(Lista tareas){
+    Lista auxiliar = tareas;
+    printf("\n\nMOSTRADO DE TODAS LAS TAREAS\n");
+
+    if (auxiliar==NULL)
+    {
+        printf("\nLa Lista se encuentra Vacia\n");
+    } else {
+        while (auxiliar != NULL)
+        {
+            printf("\n  ID TAREA %d\n", auxiliar->T.TareaID);
+            printf("    Tienen una duracion de: %d\n",auxiliar->T.Duracion);
+            printf("    Descripcion: %s\n",auxiliar->T.Descripcion);
+            auxiliar = auxiliar->Siguiente;
+        }
+    }    
 }
 
 
-void listarTareas(Tarea ** arretareas, int cantidadTareas, Tarea ** arreTareasRealizadas, int indiceRealizadas){
+void Mostrar1Tarea(Tarea tarea){
+    printf("\n  ID TAREA %d\n", tarea.TareaID);
+    printf("    Tienen una duracion de: %d\n",tarea.Duracion);
+    printf("    Descripcion: %s\n",tarea.Descripcion);
+}
 
-    printf("\n\nTAREAS PENDIENTES");
-    for (int i = 0; i < cantidadTareas; i++)
+
+
+void consultarEstado(Lista * listaPedndientes, Lista* listaRealizadas){
+ 
+    printf("\nAnalizaremos Tarea por Tare:\n");
+
+    
+
+    while (*listaPedndientes != NULL)
     {
-        if (arretareas[i])
-        {
-            Mostrar1Tarea(arretareas[i]);
-        }
+        /* code */
     }
-
-    printf("\n\nTAREAS PENDIENTES");
-    for (int j = 0; j < indiceRealizadas; j++)
-    {
-        Mostrar1Tarea(arreTareasRealizadas[j]);
-    } 
     
 }
 
 
-void buscarTareaPorID(Tarea **arretareas, int cantidadTareas, Tarea ** arreTareasRealizadas, int indiceRealizadas){
-    int ID=999;
+/* Nodo* quitarNodo(Lista * listaPendientes){
 
-    
+    Nodo* aux = NULL;
+    if (*listaPendientes != NULL){
+        aux = *listaPendientes;
+        *listaPendientes = (*listaPendientes)->Siguiente;
 
-    do
-    {
-        printf("\nPor favor ingrese el ID de la Tarea que busca...\n(tenga en cuenta que solo tiene %d tareas Cargadas...)\n", cantidadTareas);
-        scanf("%d",&ID);
-        if (ID < 0 || ID > cantidadTareas)
-        {
-            printf("\nPor favor se solicita ingresar un dato que este dentro de los parametros solicitados...\n");
-        }
-        
-    } while (ID < 0 || ID > cantidadTareas);
-        
-    for (int i = 0; i < cantidadTareas; i++)
-    {
-        if (arretareas[i])
-        {
-            if (arretareas[i]->TareaID == ID)
-            {
-                Mostrar1Tarea(arretareas[i]);
-                printf("\nLa tarea todavia no se encuentra realizada...\n");
-            }
-        }
-        
-        
-    }
-
-    for (int j = 0; j < indiceRealizadas; j++)
-    {
-        if (arreTareasRealizadas[j]->TareaID == ID)
-        {
-            Mostrar1Tarea(arreTareasRealizadas[j]);
-            printf("\nLa tarea ya se realizo...\n");
-        }
-    }   
-}
-
-
-
-void buscarTareaPorPalabra(Tarea **arretareas, int cantidadTareas, Tarea **arreTareasRealizadas, int indiceRealizadas, char *palabra){
-
-    printf("\nBUSQUEDA DE LA TAREA POR PALABRA\n");
-
-    for (int i = 0; i < cantidadTareas; i++)
-    {
-        if (arretareas[i])
-        {
-            if ( strstr(arretareas[i]->Descripcion, palabra) != NULL )
-            {
-                Mostrar1Tarea(arretareas[i]);
-                printf("\nLa Tarea se encuentra incompleta...");
-            }            
-        }
-    }
-
-    for (int j = 0; j < indiceRealizadas; j++)
-    {
-        if (strstr(arreTareasRealizadas[j]->Descripcion, palabra) != NULL)
-        {
-            Mostrar1Tarea(arreTareasRealizadas[j]);
-            printf("\nLa tarea ya se marco como realizada...");
-        }
     }
     
-    
-}
+} */
