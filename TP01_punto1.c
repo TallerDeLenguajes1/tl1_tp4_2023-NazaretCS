@@ -26,7 +26,10 @@ Lista CrearNodo();
 void MostrarTareas(Lista tareas);
 Lista CargarTarea(Lista tareasPendientes, int ID);
 void Mostrar1Tarea(Tarea tarea);
-
+void consultarEstadoTareas(Lista* listaTareasPendientes, Lista* listaTareasRealizadas);
+void EstadoDeTareas(Lista tareasPendientes, Lista tareasRealizadas);
+void BuscarTareaIDEnLasListas(Lista ListaTareas, Lista ListaTareasRealizadas, int ID);  // Busca la tarea en ambas listas e informa el estado de la misma
+int BuscarTareaID(Lista listaTareas, int ID); //Busca tarea en una sola lista en espesifico.
 
 
 int main(){
@@ -44,7 +47,7 @@ int main(){
     Lista tareasPendientes;
     Lista tareasRealizadas;
 
-    tareasPendientes = CrearLista();
+    tareasPendientes = CrearLista();   
     tareasRealizadas = CrearLista();
 
     srand(time(NULL));
@@ -65,25 +68,23 @@ int main(){
     
 
     //MostrarTareas(tareasPendientes);
-
-    consultarEstado(tareasPendientes, tareasRealizadas);
-    
+   
 
     //5. Mostrar por pantalla todas las tareas realizadas y luego listar las tareas pendientes.
 
 
+    consultarEstadoTareas(&tareasPendientes, &tareasRealizadas); 
+
+    EstadoDeTareas(tareasPendientes, tareasRealizadas);
+
+
+    int IDaBuscar;
+    printf("\nIngrese el ID de la tarea que desea Buscar...\n");
+    scanf("%d",&IDaBuscar);
    
+    BuscarTareaIDEnLasListas(tareasPendientes, tareasRealizadas, IDaBuscar);
 
-
-    //6. Cree un nuevo branch llamado busca-tarea e implemente una función de búsqueda de tarea por nro. de id de nombre BuscarTarea. La misma devuelve la tarea solicitada.
-
-   
-
-
-    //7. Vuelva al branch main e implemente también una nueva versión de la función BuscarTarea en donde la misma sea por palabra clave en vez de por Id. (uno le manda una palabra y te tiene que devolver la primera tarea que contenga dicha palabra).
-
-
-    
+      
     return 0;
 }
 
@@ -188,27 +189,85 @@ void Mostrar1Tarea(Tarea tarea){
 
 
 
-void consultarEstado(Lista * listaPedndientes, Lista* listaRealizadas){
- 
-    printf("\nAnalizaremos Tarea por Tare:\n");
+void consultarEstadoTareas(Lista* listaTareasPendientes, Lista* listaTareasRealizadas){
 
+    int realizada;
+    Lista listaTareasPendientesAux = NULL;
+    Nodo* puntProxNodoAux = NULL;
+
+    printf("- Ahora analicemos cada tarea:\n");
+
+    while(*listaTareasPendientes != NULL){
+
+        puntProxNodoAux = (*listaTareasPendientes)->Siguiente;
+
+        Mostrar1Tarea((*listaTareasPendientes)->T);
+
+        do
+        {
+            printf("Fue realizada? 1: si, 0; no\n");
+            scanf("%d", &realizada);
+
+        } while (realizada != 0 && realizada != 1);
     
+        if(realizada == 1){
+            (*listaTareasPendientes)->Siguiente = *listaTareasRealizadas;
+            // El puntero del nodo a agregar a la lista de tareas realizadas apuntará al último nodo agregado a dicha lista.
+            *listaTareasRealizadas = *listaTareasPendientes;
+            // La cabecera de la lista de tareas realizadas apunta al nodo recién agregado a la lista.
+        } else {
+            (*listaTareasPendientes)->Siguiente = listaTareasPendientesAux;
+            // El puntero del nodo a agregar a la lista de tareas pendientes (auxiliar) apuntará al último nodo agregado a dicha lista.
+            listaTareasPendientesAux = *listaTareasPendientes;
+            // El puntero del nodo a agregar a la lista de tareas pendientes (auxiliar) apuntará al último nodo agregado a dicha lista.
+        }
+        // Se usa una lista auxiliar para tareas pendientes a fin de evitar tener que revincular nodos de la lista de tareas pendientes y considerar distintos casos donde el nodo que puede ser pasado a la lista de tareas realizadas esté o al principio, o en el medio, o al final de la lista de tareas pendientes original.
 
-    while (*listaPedndientes != NULL)
-    {
-        /* code */
+        *listaTareasPendientes = puntProxNodoAux;
     }
-    
+    *listaTareasPendientes = listaTareasPendientesAux;
 }
 
 
-/* Nodo* quitarNodo(Lista * listaPendientes){
+void EstadoDeTareas(Lista tareasPendientes, Lista tareasRealizadas){
+    printf("\n\n TAREAS PENDIENTES\n");
+    MostrarTareas(tareasPendientes);
 
-    Nodo* aux = NULL;
-    if (*listaPendientes != NULL){
-        aux = *listaPendientes;
-        *listaPendientes = (*listaPendientes)->Siguiente;
+    printf("\n\n TAREAS REALIZADAS\n");
+    MostrarTareas(tareasRealizadas);
+}
 
-    }
+
+int BuscarTareaID(Lista listaTareas, int ID){
     
-} */
+    printf("\nBusqueda de la Tarea %d\n",ID);
+    Lista auxiliar = listaTareas;
+    int bandera = 0;
+
+    while (auxiliar)
+    {
+        if (auxiliar->T.TareaID == ID)
+        {
+            printf("\nTarea Encontrada:\n");
+            Mostrar1Tarea(auxiliar->T);
+            bandera = 1;
+        }
+        auxiliar = auxiliar->Siguiente;
+    }     
+    return bandera;  
+}
+
+void BuscarTareaIDEnLasListas(Lista ListaTareas, Lista ListaTareasRealizadas, int ID){
+
+    
+    int estado = BuscarTareaID(ListaTareas, ID);
+    if (estado)
+    {
+        printf("Estado de la tarea:\n     PENDIENTE\n");
+    } else {
+        estado = BuscarTareaID(ListaTareasRealizadas, ID);
+        printf("Estado de la tarea:\n     REALIZADA\n");
+    }
+    //printf("Saliendo a BuscarTareas1");
+}
+
