@@ -3,7 +3,7 @@
 #include<time.h>
 #include<string.h>
 
- //Valores aleatoreos Formula: [MAX-MIN]+MIN
+//Valores aleatoreos Formula: [MAX-MIN]+MIN
 
 struct Tarea {
     int TareaID; //Numerado en ciclo iterativo
@@ -30,19 +30,19 @@ void consultarEstadoTareas(Lista* listaTareasPendientes, Lista* listaTareasReali
 void EstadoDeTareas(Lista tareasPendientes, Lista tareasRealizadas);
 void BuscarTareaIDEnLasListas(Lista ListaTareas, Lista ListaTareasRealizadas, int ID);  // Busca la tarea en ambas listas e informa el estado de la misma
 int BuscarTareaID(Lista listaTareas, int ID); //Busca tarea en una sola lista en espesifico.
+void liberarMemoria(Lista * ListaTareas);
 
 
 int main(){
 
-    int cantidadTareas;
-   
+    //int cantidadTareas;   
 
-    //1. Desarrollar una interfaz por consola donde se solicite al usuario (es decir el empleado) cuantas tareas debe cargar.
-    cantidadTareas = CantTares();
+    //cantidadTareas = CantTares();
+
+    // Desarrollo la interfas para que el usuaio sea quien decida si seguira ingresando tareas o no 
+    int respuesta, i =0;
 
 
-    // 2. Tendrá que generar un arreglo de doble punteros dinámicamente del tipo Tarea con la cantidad de tareas solicitadas en el punto anterior.Recuerde inicializar los arreglos apuntando a NULL.
-    // En esta implementacion se reemplaza los arreglos por dos listas
 
     Lista tareasPendientes;
     Lista tareasRealizadas;
@@ -52,19 +52,42 @@ int main(){
 
     srand(time(NULL));
 
+
+    do
+    {
+        printf("\nDesea seguir cargando tareas?\n   1 : Si...  0 : No...\n");
+        scanf("%d",&respuesta);
+
+        if (respuesta)
+        {
+            tareasPendientes = CargarTarea(tareasPendientes, i+1);
+            i++;
+        }
+                
+    } while (respuesta);
+    
+
+/*    Eran test para comprovar si me creeaban bien las listas
     printf("Lista de Tareas Pendientes:\n");
     MostrarTareas(tareasPendientes);
     printf("Lista de Tareas Realizadas:\n");
     MostrarTareas(tareasPendientes);
-    
+     */
+
+
+
 
    // 3 Desarrolle una interfaz de consola para cargar las tareas, ingresando su descripción y duración. Recuerde utilizar reserva de  memoria dinámica para la carga de la descripción.
   
     //Cargo las tareas la lista
-    for (int i = 0; i < cantidadTareas; i++)
+
+   /*  for (int i = 0; i < cantidadTareas; i++)
     {
         tareasPendientes = CargarTarea(tareasPendientes, i+1);
-    }
+    } */
+
+    
+    
     
 
     //MostrarTareas(tareasPendientes);
@@ -84,7 +107,9 @@ int main(){
    
     BuscarTareaIDEnLasListas(tareasPendientes, tareasRealizadas, IDaBuscar);
 
-      
+    liberarMemoria(&tareasPendientes);
+    liberarMemoria(&tareasRealizadas);
+
     return 0;
 }
 
@@ -195,7 +220,7 @@ void consultarEstadoTareas(Lista* listaTareasPendientes, Lista* listaTareasReali
     Lista listaTareasPendientesAux = NULL;
     Nodo* puntProxNodoAux = NULL;
 
-    printf("- Ahora analicemos cada tarea:\n");
+    printf("\n\n- Ahora analicemos cada tarea:\n");
 
     while(*listaTareasPendientes != NULL){
 
@@ -271,3 +296,20 @@ void BuscarTareaIDEnLasListas(Lista ListaTareas, Lista ListaTareasRealizadas, in
     //printf("Saliendo a BuscarTareas1");
 }
 
+
+
+void liberarMemoria(Lista * ListaTareas){
+    Nodo* auxLiberarMemoria = NULL;
+
+    while (ListaTareas)
+    {
+        free((*ListaTareas)->T.Descripcion);
+        auxLiberarMemoria = *ListaTareas;
+        *ListaTareas = (*ListaTareas)->Siguiente;
+        free(auxLiberarMemoria);
+    }
+}
+
+
+
+// Consultarle a Daniela como genera lso numeros aleatorios
