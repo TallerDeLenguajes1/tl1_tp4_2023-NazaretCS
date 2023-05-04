@@ -281,7 +281,6 @@ int BuscarTareaID(Lista listaTareas, int ID){
     }     
     return bandera;  
 }
-
 void BuscarTareaIDEnLasListas(Lista ListaTareas, Lista ListaTareasRealizadas, int ID){
 
     
@@ -312,4 +311,3 @@ void liberarMemoria(Lista * ListaTareas){
 
 
 
-// Consultarle a Daniela como genera lso numeros aleatorios
